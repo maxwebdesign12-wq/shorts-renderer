@@ -1,19 +1,21 @@
 import express from "express";
-import { exec } from "child_process";
 
 const app = express();
-app.use(express.json());
+app.use(express.json({ limit: "10mb" }));
 
-app.get("/health", (req, res) => {
-  res.json({ ok: true });
-});
+// ✅ health check
+app.get("/", (req, res) => res.send("OK - shorts-renderer is running"));
+app.get("/health", (req, res) => res.json({ ok: true }));
 
-app.post("/render", (req, res) => {
-  exec("ffmpeg -version", (err, stdout) => {
-    if (err) return res.status(500).json({ error: "ffmpeg not available" });
-    res.json({ success: true, ffmpeg: stdout.split("\n")[0] });
+// ✅ placeholder render endpoint (we’ll add FFmpeg next)
+app.post("/render", async (req, res) => {
+  const { script, audio_url, background_url } = req.body || {};
+  return res.json({
+    ok: true,
+    received: { script, audio_url, background_url },
+    next: "FFmpeg render comes next"
   });
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log("Renderer running on port", PORT));
+const port = process.env.PORT || 10000;
+app.listen(port, () => console.log(`Renderer running on port ${port}`));
