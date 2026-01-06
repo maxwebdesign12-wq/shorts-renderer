@@ -5,6 +5,9 @@ import path from "path";
 
 const app = express();
 app.use(express.json({ limit: "50mb" }));
+app.get("/", (req, res) => {
+  res.status(200).send("OK - shorts-renderer is running");
+});
 
 const PORT = process.env.PORT || 10000;
 
